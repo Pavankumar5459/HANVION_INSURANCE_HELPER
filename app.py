@@ -9,7 +9,7 @@ st.set_page_config(
 )
 
 # ------------------------------------------------------------
-# Global Styling (Healthcare.gov style)
+# Global UI Styling
 # ------------------------------------------------------------
 st.markdown(
     """
@@ -19,9 +19,16 @@ st.markdown(
         color: #222222;
     }
 
-    h1 { font-size: 2rem !important; font-weight: 700 !important; }
-    h2 { font-size: 1.4rem !important; font-weight: 600 !important; }
-    h3, h4 { font-weight: 600 !important; }
+    h1, h2, h3, h4, h5 {
+        background-color: transparent !important;
+        color: #0D3B66 !important;
+    }
+
+    .stMarkdown h1, 
+    .stMarkdown h2, 
+    .stMarkdown h3 {
+        background-color: transparent !important;
+    }
 
     .stTabs [role="tablist"] button {
         font-size: 1rem !important;
@@ -33,6 +40,7 @@ st.markdown(
     .stTabs [aria-selected="true"] {
         border-bottom: 3px solid #00509E !important;
         font-weight: 600 !important;
+        color: #00509E !important;
     }
 
     .stButton button {
@@ -61,6 +69,7 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
 
 # ------------------------------------------------------------
 # IMPORT ALL PAGES
