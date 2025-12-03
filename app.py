@@ -1,47 +1,29 @@
 import streamlit as st
 
-# Import pages
-from pages.overview import show_overview
-from pages.insurance_hub import show_insurance_hub
-from pages.plan_wizard import show_plan_wizard
-from pages.cost_calculator import show_cost_calculator
-from pages.ai_assistant import show_ai_assistant
-from pages.nhe_dashboard import show_nhe_dashboard
-
 # ------------------------------------------------------------
 # Page Configuration
 # ------------------------------------------------------------
 st.set_page_config(
-    page_title="Hanvion Health – Insurance Intelligence",
+    page_title="Hanvion Health – Insurance Intelligence Platform",
     layout="wide"
 )
+
 # ------------------------------------------------------------
-# Global UI Styling
+# Global UI Styling (Healthcare.gov style)
 # ------------------------------------------------------------
 st.markdown(
     """
     <style>
 
-    /* Global font */
     html, body, [class*="css"]  {
         font-family: "Inter", sans-serif;
         color: #222222;
     }
 
-    /* Titles */
-    h1 {
-        font-size: 1.9rem !important;
-        font-weight: 700 !important;
-    }
-    h2 {
-        font-size: 1.4rem !important;
-        font-weight: 600 !important;
-    }
-    h3, h4 {
-        font-weight: 600 !important;
-    }
+    h1 { font-size: 2rem !important; font-weight: 700 !important; }
+    h2 { font-size: 1.4rem !important; font-weight: 600 !important; }
+    h3, h4 { font-weight: 600 !important; }
 
-    /* Tabs */
     .stTabs [role="tablist"] button {
         font-size: 1rem !important;
         padding-top: 8px !important;
@@ -55,12 +37,6 @@ st.markdown(
         font-weight: 600 !important;
     }
 
-    /* Cards used in Hub */
-    div[data-testid="stMarkdownContainer"] > div {
-        border-radius: 10px;
-    }
-
-    /* Buttons */
     .stButton button {
         background-color: #0D3B66 !important;
         color: white !important;
@@ -68,18 +44,19 @@ st.markdown(
         padding: 0.5rem 1rem !important;
         border: none !important;
     }
+
     .stButton button:hover {
         background-color: #00509E !important;
     }
 
-    /* Input fields */
-    .stTextInput input, .stNumberInput input, .stTextArea textarea {
+    .stTextInput input,
+    .stNumberInput input,
+    .stTextArea textarea {
         border-radius: 8px !important;
         border: 1px solid #BBB !important;
         padding: 8px !important;
     }
 
-    /* Section spacing */
     .block-container {
         padding-top: 1.5rem !important;
         padding-bottom: 3rem !important;
@@ -90,14 +67,26 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# ------------------------------------------------------------
+# Import all pages
+# ------------------------------------------------------------
+from pages.overview import show_overview
+from pages.insurance_hub import show_insurance_hub
+from pages.plan_wizard import show_plan_wizard
+from pages.cost_calculator import show_cost_calculator
+from pages.ai_assistant import show_ai_assistant
+from pages.nhe_dashboard import show_nhe_dashboard
+from pages.glossary import show_glossary
+from pages.faq import show_faq
+from pages.about import show_about
 
 # ------------------------------------------------------------
-# Header (clean, Healthcare.gov style)
+# Header Section
 # ------------------------------------------------------------
 st.markdown(
     """
-    <div style='padding: 15px 0 5px 0;'>
-        <h1 style='color:#0D3B66; margin-bottom: 2px;'>Hanvion Health</h1>
+    <div style='padding: 18px 0 10px 0;'>
+        <h1 style='color:#0D3B66; margin-bottom:4px;'>Hanvion Health</h1>
         <h4 style='color:#00509E; margin-top:0; font-weight:400;'>Insurance • Costs • Intelligence Platform</h4>
     </div>
     """,
@@ -114,10 +103,13 @@ tabs = st.tabs([
     "Cost Calculator",
     "NHE Dashboard",
     "AI Assistant",
+    "Glossary",
+    "FAQ",
+    "About",
 ])
 
 # ------------------------------------------------------------
-# Content Routing
+# Routing to Pages
 # ------------------------------------------------------------
 with tabs[0]:
     show_overview()
@@ -136,3 +128,12 @@ with tabs[4]:
 
 with tabs[5]:
     show_ai_assistant()
+
+with tabs[6]:
+    show_glossary()
+
+with tabs[7]:
+    show_faq()
+
+with tabs[8]:
+    show_about()
