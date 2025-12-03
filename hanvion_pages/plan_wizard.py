@@ -1,131 +1,127 @@
 import streamlit as st
 
+def evaluate_plan(age, income, family, health_conditions, medications, hospital_visits, prefer_low_premium):
+    """Core logic: decides plan tier + checklist flags."""
+
+    # ---- Risk Tier ----
+    risk = "Low"
+    if age > 50 or len(health_conditions) > 0 or hospital_visits > 1:
+        risk = "Moderate"
+    if age > 60 or "cancer" in health_conditions or "diabetes" in health_conditions:
+        risk = "High"
+
+    # ---- Income Category ----
+    if income < 30000:
+        income_level = "Low Income"
+    elif income < 70000:
+        income_level = "Middle Income"
+    else:
+        income_level = "High Income"
+
+    # ---- Plan Recommendation ----
+    if income < 35000 and risk == "Low":
+        plan = "Silver (with Cost Sharing Reductions)"
+    elif risk == "Low":
+        plan = "Bronze"
+    elif risk == "Moderate":
+        plan = "Silver"
+    elif risk == "High":
+        plan = "Gold"
+    else:
+        plan = "Silver"
+
+    # ---- Checklist Flags ----
+    flags = []
+
+    # Checkpoint #2: low premium bias
+    if prefer_low_premium:
+        flags.append("Checkpoint #2: Choosing based only on premium increases deductible/out-of-pocket risk.")
+
+    # Checkpoint #6: network
+    flags.append("Checkpoint #6: Verify local network hospitals before finalizing this plan.")
+
+    # Checkpoint #8: breadwinner protection
+    if family > 1 and income > 0:
+        flags.append("Checkpoint #8: Since others depend on your income, consider term insurance coverage.")
+
+    # Checkpoint #9: elderly risk
+    if age > 55:
+        flags.append("Checkpoint #9: Age above 55 — ensure your health plan provides 15–20 lakh (or $20k–$30k) coverage.")
+
+    # Checkpoint #12: add-ons
+    if "surgery" in health_conditions or risk == "High":
+        flags.append("Checkpoint #12: Add important riders (e.g., critical illness, robotic surgery cover).")
+
+    return plan, risk, income_level, flags
+
+
 def show_plan_wizard():
     st.title("Insurance Plan Wizard")
-    st.write("Answer a few quick questions to find the best insurance plan for your needs.")
-
-    # -----------------------------
-    # Step 1: Age Group
-    # -----------------------------
-    age = st.selectbox(
-        "What is your age group?",
-        ["Under 18", "18–29", "30–45", "46–64", "65 and older"]
-    )
-
-    # -----------------------------
-    # Step 2: Medical Usage
-    # -----------------------------
-    usage = st.selectbox(
-        "How often do you expect to use healthcare?",
-        [
-            "Very rarely (1–2 visits a year)", 
-            "Occasionally (3–6 visits a year)",
-            "Frequently (monthly visits)",
-            "Chronic conditions requiring regular care"
-        ]
-    )
-
-    # -----------------------------
-    # Step 3: Budget Preference
-    # -----------------------------
-    budget = st.selectbox(
-        "What is your monthly premium preference?",
-        ["Lowest cost", "Moderate cost", "Higher cost for best coverage"]
-    )
-
-    # -----------------------------
-    # Step 4: Deductible Preference
-    # -----------------------------
-    deductible_pref = st.selectbox(
-        "Preferred deductible style:",
-        ["Low deductible", "Medium deductible", "High deductible (okay with HDHP)"]
-    )
-
-    # -----------------------------
-    # Step 5: Network Flexibility
-    # -----------------------------
-    network = st.selectbox(
-        "Do you need out-of-network coverage?",
-        ["No", "Yes", "Not sure"]
-    )
-
-    # -----------------------------
-    # Step 6: Medication Needs
-    # -----------------------------
-    meds = st.selectbox(
-        "Do you take medications regularly?",
-        ["No", "Occasionally", "Monthly", "Multiple medications monthly"]
-    )
-
-    # -----------------------------
-    # Step 7: Travel Frequency
-    # -----------------------------
-    travel = st.selectbox(
-        "Do you travel frequently (out of state)?",
-        ["No", "Yes"]
-    )
+    st.write("Answer a few questions and get a personalized insurance recommendation based on your profile.")
 
     st.markdown("---")
+    st.header("Basic Details")
 
-    # -----------------------------
-    # Recommendation Logic
-    # -----------------------------
-    result = ""
-    reasoning = []
-
-    # HDHP Recommendation Logic
-    if budget == "Lowest cost" and deductible_pref == "High deductible (okay with HDHP)":
-        result = "High Deductible Health Plan (HDHP) + HSA"
-        reasoning.append("You prefer the lowest premiums and are okay with a high deductible.")
-        reasoning.append("You can also save money tax-free using an HSA.")
-
-    # HMO Recommendation
-    elif network == "No" and budget != "Higher cost for best coverage":
-        result = "HMO (Health Maintenance Organization)"
-        reasoning.append("HMO plans have lower monthly premiums.")
-        reasoning.append("You prefer to stay in-network and don't require flexibility.")
-
-    # PPO Recommendation
-    elif network == "Yes" or travel == "Yes":
-        result = "PPO (Preferred Provider Organization)"
-        reasoning.append("PPO plans offer out-of-network coverage and more flexibility.")
-        reasoning.append("Ideal for frequent travelers or those seeing multiple specialists.")
-
-    # EPO Recommendation
-    elif network == "Not sure" and budget == "Moderate cost":
-        result = "EPO (Exclusive Provider Organization)"
-        reasoning.append("EPO plans offer moderate premiums without referrals.")
-        reasoning.append("A good balance between HMO and PPO.")
-
-    # Chronic Conditions
-    if usage == "Chronic conditions requiring regular care":
-        result = "Low Deductible PPO or Gold Tier Plan"
-        reasoning.append("You need predictable costs and regular access to specialists.")
-
-    # Medicaid
-    if age == "Under 18" and budget == "Lowest cost":
-        result = "Medicaid (Child Health Program)"
-        reasoning.append("Children with low-income households often qualify for Medicaid.")
-
-    # Medicare
-    if age == "65 and older":
-        result = "Medicare Advantage (Part C)"
-        reasoning.append("This includes hospital, doctor, and prescription coverage.")
-
-    # If still empty → default
-    if result == "":
-        result = "Silver Tier Marketplace Plan"
-        reasoning.append("You fit a broad usage and budget category suitable for Silver-level plans.")
-
-    # -----------------------------
-    # Output
-    # -----------------------------
-    st.subheader("Recommended Plan Type")
-    st.success(result)
-
-    st.subheader("Why this plan fits you")
-    for reason in reasoning:
-        st.write("- " + reason)
+    age = st.number_input("Your Age", min_value=1, max_value=99)
+    income = st.number_input("Household Annual Income ($)", min_value=0)
+    family = st.number_input("Total Number of Family Members (including you)", min_value=1)
 
     st.markdown("---")
-    st.info("This tool provides educational guidance only. For exact eligibility and pricing, refer to Healthcare.gov.")
+    st.header("Health and Usage")
+
+    health_conditions = st.multiselect(
+        "Select any existing health conditions",
+        ["none", "diabetes", "hypertension", "asthma", "heart disease", "cancer", "pregnancy", "surgery needed"]
+    )
+
+    medications = st.number_input("Number of long-term medications you take", min_value=0)
+    hospital_visits = st.number_input("Expected Hospital Visits per Year", min_value=0, max_value=10)
+
+    st.markdown("---")
+    st.header("Preferences")
+
+    prefer_low_premium = st.checkbox("I prefer the lowest monthly premium")
+
+    if st.button("Get Recommendation"):
+        plan, risk, income_level, flags = evaluate_plan(
+            age, income, family, health_conditions, medications, hospital_visits, prefer_low_premium
+        )
+
+        st.markdown("---")
+        st.subheader("Your Recommended Plan Tier")
+        st.success(plan)
+
+        st.subheader("Your Risk Profile")
+        st.info(risk)
+
+        st.subheader("Your Income Category")
+        st.write(income_level)
+
+        st.subheader("Important Notes (From 12-Point Checklist)")
+        for f in flags:
+            st.write(f"- {f}")
+
+        st.markdown("---")
+        st.subheader("Why This Plan Is Recommended")
+
+        if plan.startswith("Silver") and income < 35000:
+            st.write(
+                "You may qualify for Cost Sharing Reductions (CSR). This lowers your deductible and out-of-pocket "
+                "expenses significantly while keeping premiums affordable. Silver with CSR is usually the best choice "
+                "for low-income but healthy individuals."
+            )
+        elif plan == "Bronze":
+            st.write(
+                "Since your risk profile is low and income allows for risk-sharing, a Bronze plan minimizes premiums "
+                "while covering major emergencies. Ideal for individuals with few health conditions."
+            )
+        elif plan == "Silver":
+            st.write(
+                "Silver plans provide a strong balance between premiums and coverage, especially for moderate health "
+                "service usage or families needing predictable costs."
+            )
+        elif plan == "Gold":
+            st.write(
+                "Gold plans offer low deductibles and strong coverage. Recommended for older individuals, people with "
+                "chronic conditions, or those expecting higher healthcare usage."
+            )
