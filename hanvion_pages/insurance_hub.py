@@ -153,57 +153,66 @@ def show_insurance_hub():
                 card(desc)
 
     # =====================================================
-    # QUIZ SECTION
-    # =====================================================
-    st.markdown("<hr style='margin-top:40px;'>", unsafe_allow_html=True)
-    section_title("Insurance Knowledge Quiz")
+# QUIZ SECTION (Always Visible)
+# =====================================================
 
-    questions = [
-        {
-            "q": "What is a deductible?",
-            "options": [
-                "A fixed amount you pay for doctor visits",
-                "The amount you pay before insurance starts covering",
-                "The total amount the insurer pays",
-            ],
-            "answer": 1,
-            "explanation": "Deductible = amount you pay each year before insurance contributes."
-        },
-        {
-            "q": "What happens after you reach your out-of-pocket maximum?",
-            "options": [
-                "Insurance covers 100% of covered services",
-                "You start paying more",
-                "Your premiums increase immediately"
-            ],
-            "answer": 0,
-            "explanation": "Once OOP max is reached, insurance covers all allowed expenses for the year."
-        },
-        {
-            "q": "Which of the following is NOT usually covered before deductible?",
-            "options": [
-                "Preventive care",
-                "Vaccines",
-                "Emergency surgery"
-            ],
-            "answer": 2,
-            "explanation": "Emergency surgery is usually cost-shared after deductible."
-        },
-    ]
+st.markdown("<hr style='margin-top:40px;'>", unsafe_allow_html=True)
+st.markdown(
+    "<div style='font-size:24px; font-weight:700; color:#0D3B66; margin-bottom:10px;'>Insurance Knowledge Quiz</div>",
+    unsafe_allow_html=True
+)
 
-    score = 0
+quiz_questions = [
+    {
+        "question": "What is a deductible?",
+        "options": [
+            "A fixed amount you pay for doctor visits",
+            "The amount you pay before insurance starts covering costs",
+            "The maximum amount your insurance will pay"
+        ],
+        "answer": 1,
+        "explanation": "A deductible is the amount you must pay each year before insurance starts covering eligible expenses."
+    },
+    {
+        "question": "What happens after you reach your out-of-pocket maximum?",
+        "options": [
+            "Insurance covers 100% of covered services for the rest of the year",
+            "You stop paying premiums",
+            "Your insurance plan resets"
+        ],
+        "answer": 0,
+        "explanation": "Once you hit the OOP max, your insurer pays all additional covered costs for the year."
+    },
+    {
+        "question": "Which of the following is always FREE under preventive care?",
+        "options": [
+            "Annual wellness visit",
+            "Emergency room visit",
+            "CT scan"
+        ],
+        "answer": 0,
+        "explanation": "Preventive care includes fully covered services like annual checkups and vaccines."
+    }
+]
 
-    for i, q in enumerate(questions):
-        st.write(f"**Q{i+1}. {q['q']}**")
-        choice = st.radio("", q["options"], key=f"quiz_{i}")
+score = 0
 
-        if choice == q["options"][q["answer"]]:
-            score += 1
-            st.success("Correct!")
-        else:
-            st.error("Incorrect.")
-        st.info(q["explanation"])
-        st.markdown("---")
+for index, q in enumerate(quiz_questions):
+    st.markdown(f"### Q{index + 1}. {q['question']}")
 
-    st.subheader(f"Your Score: {score} / {len(questions)}")
+    user_answer = st.radio(
+        "Choose one:",
+        q["options"],
+        key=f"quiz_q_{index}"
+    )
 
+    if user_answer == q["options"][q["answer"]]:
+        st.success("Correct!")
+        score += 1
+    else:
+        st.error("Incorrect.")
+
+    st.info(q["explanation"])
+    st.markdown("---")
+
+st.subheader(f"Final Score: {score} / {len(quiz_questions)}")
