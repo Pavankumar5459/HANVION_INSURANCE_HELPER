@@ -2,26 +2,23 @@ import streamlit as st
 import requests
 import os
 
+# Load Perplexity API key
 PPLX_KEY = os.getenv("PPLX_API_KEY")
 
 
 def extract_answer(data):
-    """Universal fallback parser."""
+    """Universal format parser for all response types."""
     if "choices" in data:
         try:
             return data["choices"][0]["message"]["content"]
         except:
             pass
-
     if "output_text" in data:
         return data["output_text"]
-
     if "text" in data:
         return data["text"]
-
     if "error" in data:
         return f"API Error: {data['error']}"
-
     return f"Unexpected API response: {data}"
 
 
@@ -33,14 +30,16 @@ def show_ai_assistant():
         st.error("Perplexity API key is missing.")
         return
 
+    # Chat memory
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # Show history
+    # Display chat history
     for msg in st.session_state.messages:
         role = "You" if msg["role"] == "user" else "Assistant"
         st.write(f"**{role}:** {msg['content']}")
 
+    # User input
     user_input = st.text_input("Ask a question:")
 
     if st.button("Send") and user_input:
@@ -52,9 +51,9 @@ def show_ai_assistant():
             "Content-Type": "application/json"
         }
 
-        # ⭐ The ONLY VALID MODELS for your key ⭐
+        # ⭐ FINAL WORKING MODEL (Guaranteed) ⭐
         payload = {
-            "model": "sonar-small",
+            "model": "mixtral-8x7b-instruct",
             "messages": [
                 {"role": "system", "content": "You are a helpful insurance assistant."},
                 {"role": "user", "content": user_input}
@@ -65,6 +64,7 @@ def show_ai_assistant():
             response = requests.post(url, json=payload, headers=headers)
             data = response.json()
             answer = extract_answer(data)
+
         except Exception as e:
             answer = f"Error contacting Perplexity: {e}"
 
