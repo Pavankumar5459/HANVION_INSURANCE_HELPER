@@ -1,70 +1,53 @@
 import streamlit as st
-import openai
+import requests
 import os
+
+# Load Perplexity API key
+PPLX_KEY = os.getenv("PPLX_API_KEY")
 
 def show_ai_assistant():
     st.title("AI Insurance Assistant")
     st.write("Ask questions about health insurance, benefits, costs, and plan types.")
 
-    # Set API key (must be set in Streamlit Cloud secrets or environment variable)
-    api_key = os.getenv("OPENAI_API_KEY")
-
-    if not api_key:
-        st.error("OpenAI API key is missing. Add it in your environment or secrets.")
+    if not PPLX_KEY:
+        st.error("Perplexity API key is missing. Add it in your Streamlit Secrets.")
         return
 
-    client = openai.OpenAI(api_key=api_key)
-
-    # Initialize session state for chat
+    # Chat history
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # Display previous messages
+    # Show chat history
     for msg in st.session_state.messages:
-        st.write(f"**You:** {msg['user']}")
-        st.write(f"**Assistant:** {msg['assistant']}")
+        role = "You" if msg["role"] == "user" else "Assistant"
+        st.write(f"**{role}:** {msg['content']}")
 
-    # User input
-    query = st.text_input("Your question", "")
+    # Input box
+    user_input = st.text_input("Ask a question:")
 
-    if st.button("Ask"):
-        if not query.strip():
-            st.warning("Please enter a question.")
-            return
+    if st.button("Send") and user_input:
+        st.session_state.messages.append({"role": "user", "content": user_input})
 
-        # System instructions for insurance expert
-        system_prompt = (
-            "You are an expert health insurance assistant. "
-            "Explain things clearly, professionally, and with correct U.S. insurance terminology. "
-            "Do not use emojis. "
-            "Topics include: deductibles, copays, coinsurance, networks, Marketplace plans, "
-            "Medicare, Medicaid, HDHP, PPO, HMO, EPO, OOP maximums, prior authorization, "
-            "EOBs, allowed amounts, and CPT billing."
-        )
+        # Perplexity API call
+        url = "https://api.perplexity.ai/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {PPLX_KEY}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "model": "llama-3.1-8b-instruct",
+            "messages": [
+                {"role": "system", "content": "You are a helpful insurance assistant."},
+                {"role": "user", "content": user_input},
+            ]
+        }
 
         try:
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": query}
-                ]
-            )
-
-            answer = response.choices[0].message["content"]
-
-            # Save to history
-            st.session_state.messages.append(
-                {"user": query, "assistant": answer}
-            )
-
-            # Display response
-            st.write(f"**You:** {query}")
-            st.write(f"**Assistant:** {answer}")
-
+            response = requests.post(url, json=payload, headers=headers)
+            result = response.json()
+            answer = result["choices"][0]["message"]["content"]
         except Exception as e:
-            st.error(f"Error: {e}")
+            answer = f"Error: {e}"
 
-    if st.button("Clear Conversation"):
-        st.session_state.messages = []
-        st.success("Conversation reset.")
+        st.session_state.messages.append({"role": "assistant", "content": answer})
+        st.experimental_rerun()
