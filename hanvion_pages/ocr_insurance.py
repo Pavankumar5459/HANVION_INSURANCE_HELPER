@@ -6,28 +6,28 @@ import os
 PPLX_KEY = os.getenv("PPLX_API_KEY")
 
 def encode_image(uploaded_file):
-    """Convert uploaded image to Base64."""
+    """Convert uploaded JPG/PNG to Base64."""
     return base64.b64encode(uploaded_file.read()).decode("utf-8")
 
 
 def show_ocr():
     st.title("Insurance Card OCR")
-    st.write("Upload the front or back of an insurance card to extract ID, group number, copays, plan details, and phone numbers.")
+    st.write("Upload the front/back of an insurance card to extract structured details.")
 
     if not PPLX_KEY:
-        st.error("Perplexity API key missing. Add PPLX_API_KEY to Streamlit Secrets.")
+        st.error("Missing Perplexity API key.")
         return
 
-    uploaded = st.file_uploader("Upload insurance card image", type=["jpg", "jpeg", "png"])
+    uploaded = st.file_uploader("Upload Insurance Card (JPG or PNG)", type=["jpg", "jpeg", "png"])
 
     if uploaded:
         st.image(uploaded, caption="Uploaded Insurance Card", use_column_width=True)
 
-        if st.button("Extract Insurance Information"):
-            with st.spinner("Extracting information..."):
+        if st.button("Extract Insurance Details"):
 
-                # Convert to base64
-                image_b64 = encode_image(uploaded)
+            with st.spinner("Extracting with AI..."):
+
+                img_b64 = encode_image(uploaded)
 
                 url = "https://api.perplexity.ai/chat/completions"
                 headers = {
@@ -35,41 +35,36 @@ def show_ocr():
                     "Content-Type": "application/json"
                 }
 
-                # Vision prompt
-                prompt = (
-                    "Extract the following fields from this insurance card image. "
-                    "If any field is missing, return 'Not found'. "
-                    "Fields:\n"
-                    "- Member Name\n"
-                    "- Member ID\n"
-                    "- Group Number\n"
-                    "- Plan Name\n"
-                    "- Insurance Company\n"
-                    "- Phone Numbers\n"
-                    "- Copay Information (PCP, Specialist, ER, Urgent Care)\n"
-                    "- Deductible Information\n"
-                    "- Prescription (Rx) Benefits\n"
-                    "- Plan Type (HMO, PPO, EPO, HDHP)\n"
-                )
+                system_prompt = """
+                You are an insurance card OCR assistant. Extract all fields in clean JSON format.
+                If a field is missing, return "Not provided".
+
+                Required fields:
+                - member_name
+                - member_id
+                - group_number
+                - plan_type
+                - insurance_company
+                - phone_numbers
+                - copay_pcp
+                - copay_specialist
+                - copay_er
+                - copay_urgent
+                - deductible
+                - rx_tier1
+                - rx_tier2
+                - rx_tier3
+                """
 
                 payload = {
-                    "model": "sonar-small-chat",
+                    "model": "mixtral-8x7b-instruct",
                     "messages": [
-                        {
-                            "role": "system",
-                            "content": "You are an insurance card OCR assistant. Extract structured insurance fields clearly."
-                        },
-                        {
-                            "role": "user",
-                            "content": prompt,
-                        },
+                        {"role": "system", "content": system_prompt},
                         {
                             "role": "user",
                             "content": [
-                                {
-                                    "type": "input_image",
-                                    "image": image_b64
-                                }
+                                {"type": "input_image", "image": img_b64},
+                                {"type": "text", "text": "Extract all fields in JSON."}
                             ]
                         }
                     ]
@@ -79,18 +74,16 @@ def show_ocr():
                     response = requests.post(url, headers=headers, json=payload)
                     data = response.json()
 
-                    # Try parsing all possible formats
+                    # Parse safely
                     if "choices" in data:
-                        extracted = data["choices"][0]["message"]["content"]
-                    elif "output_text" in data:
-                        extracted = data["output_text"]
+                        raw_text = data["choices"][0]["message"]["content"]
                     else:
-                        extracted = f"Unexpected response format: {data}"
+                        raw_text = str(data)
 
                 except Exception as e:
-                    extracted = f"Error contacting Perplexity: {e}"
+                    raw_text = f"Error: {e}"
 
-                st.subheader("Extracted Insurance Information")
-                st.write(extracted)
+                st.subheader("Extracted Insurance Data")
+                st.code(raw_text)
 
-    st.caption("This OCR tool uses AI to extract fields from insurance cards. Accuracy may vary depending on image quality.")
+                st.success("Extraction complete.")
