@@ -42,13 +42,21 @@ def show_ai_assistant():
             "messages": [
                 {"role": "system", "content": "You are a helpful insurance assistant."},
                 {"role": "user", "content": user_input}
-            ],
+            ]
         }
 
         try:
             response = requests.post(url, json=payload, headers=headers)
             data = response.json()
-            answer = data["choices"][0]["message"]["content"]
+
+            # NEW SAFETY PARSER
+            if "choices" in data:
+                answer = data["choices"][0]["message"]["content"]
+            elif "output_text" in data:
+                answer = data["output_text"]
+            else:
+                answer = f"Unexpected API response: {data}"
+
         except Exception as e:
             answer = f"Error from Perplexity: {e}"
 
@@ -57,11 +65,10 @@ def show_ai_assistant():
             {"role": "assistant", "content": answer}
         )
 
-        # Instead of rerun, simply clear input via empty container
         st.success("Response received. Scroll up to view it.")
 
-    # Button to clear chat
+    # Clear chat
     if st.button("Clear Conversation"):
         st.session_state.messages = []
-        st.experimental_set_query_params()  # Safe page refresh
+        st.experimental_set_query_params()
         st.success("Chat cleared.")
