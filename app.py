@@ -9,7 +9,7 @@ st.set_page_config(
 )
 
 # ------------------------------------------------------------
-# Global Styling (Healthcare.gov Style)
+# Global Styling (Healthcare.gov look)
 # ------------------------------------------------------------
 st.markdown(
     """
@@ -63,7 +63,7 @@ st.markdown(
 )
 
 # ------------------------------------------------------------
-# IMPORT PAGES
+# IMPORT ALL PAGES
 # ------------------------------------------------------------
 from hanvion_pages.overview import show_overview
 from hanvion_pages.insurance_hub import show_insurance_hub
@@ -73,6 +73,7 @@ from hanvion_pages.compare_plans import show_compare_plans
 from hanvion_pages.nhe_dashboard import show_nhe_dashboard
 from hanvion_pages.ai_assistant import show_ai_assistant
 from hanvion_pages.ocr_insurance import show_ocr
+from hanvion_pages.ocr_plan_pdf import show_pdf_ocr
 from hanvion_pages.faq import show_faq
 from hanvion_pages.about import show_about
 
@@ -85,7 +86,7 @@ st.subheader("Insurance • Costs • Intelligence Platform")
 st.markdown("---")
 
 # ------------------------------------------------------------
-# TOP NAVIGATION TABS (NO LEFT MENU)
+# TABS (TOP NAVIGATION)
 # ------------------------------------------------------------
 tabs = st.tabs([
     "Overview",
@@ -96,12 +97,13 @@ tabs = st.tabs([
     "NHE Dashboard",
     "AI Assistant",
     "OCR – Insurance Card",
+    "OCR – Plan PDF",
     "FAQ",
     "About"
 ])
 
 # ------------------------------------------------------------
-# ROUTING – DISPLAY PAGE CONTENT
+# ROUTER
 # ------------------------------------------------------------
 with tabs[0]:
     show_overview()
@@ -128,7 +130,10 @@ with tabs[7]:
     show_ocr()
 
 with tabs[8]:
-    show_faq()
+    show_pdf_ocr()
 
 with tabs[9]:
+    show_faq()
+
+with tabs[10]:
     show_about()
