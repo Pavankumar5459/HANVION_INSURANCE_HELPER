@@ -9,7 +9,7 @@ st.set_page_config(
 )
 
 # ------------------------------------------------------------
-# Global UI Styling (Healthcare.gov style)
+# Global Styling (Healthcare.gov Style)
 # ------------------------------------------------------------
 st.markdown(
     """
@@ -28,7 +28,7 @@ st.markdown(
         padding-top: 8px !important;
         padding-bottom: 8px !important;
         color: #0D3B66 !important;
-        border-bottom: 2px solid #ddd;
+        border-bottom: 2px solid #ddd !important;
     }
     .stTabs [aria-selected="true"] {
         border-bottom: 3px solid #00509E !important;
@@ -63,7 +63,7 @@ st.markdown(
 )
 
 # ------------------------------------------------------------
-# IMPORT PAGES  (ALL FROM hanvion_pages/)
+# IMPORT PAGES
 # ------------------------------------------------------------
 from hanvion_pages.overview import show_overview
 from hanvion_pages.insurance_hub import show_insurance_hub
@@ -73,27 +73,19 @@ from hanvion_pages.compare_plans import show_compare_plans
 from hanvion_pages.nhe_dashboard import show_nhe_dashboard
 from hanvion_pages.ai_assistant import show_ai_assistant
 from hanvion_pages.ocr_insurance import show_ocr
-from hanvion_pages.glossary import show_glossary
 from hanvion_pages.faq import show_faq
 from hanvion_pages.about import show_about
 
 # ------------------------------------------------------------
 # HEADER
 # ------------------------------------------------------------
-st.markdown(
-    """
-    <div style='padding: 18px 0 10px 0;'>
-        <h1 style='color:#0D3B66; margin-bottom:4px;'>Hanvion Health</h1>
-        <h4 style='color:#00509E; margin-top:0; font-weight:400;'>
-            Insurance • Costs • Intelligence Platform
-        </h4>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+st.title("Hanvion Health")
+st.subheader("Insurance • Costs • Intelligence Platform")
+
+st.markdown("---")
 
 # ------------------------------------------------------------
-# TOP NAVIGATION TABS
+# TOP NAVIGATION TABS (NO LEFT MENU)
 # ------------------------------------------------------------
 tabs = st.tabs([
     "Overview",
@@ -104,13 +96,12 @@ tabs = st.tabs([
     "NHE Dashboard",
     "AI Assistant",
     "OCR – Insurance Card",
-    "Glossary",
     "FAQ",
-    "About",
+    "About"
 ])
 
 # ------------------------------------------------------------
-# ROUTING
+# ROUTING – DISPLAY PAGE CONTENT
 # ------------------------------------------------------------
 with tabs[0]:
     show_overview()
@@ -137,10 +128,7 @@ with tabs[7]:
     show_ocr()
 
 with tabs[8]:
-    show_glossary()
-
-with tabs[9]:
     show_faq()
 
-with tabs[10]:
+with tabs[9]:
     show_about()
