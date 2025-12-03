@@ -2,12 +2,17 @@ import streamlit as st
 import requests
 import os
 
+# Load Perplexity API key
 PPLX_KEY = os.getenv("PPLX_API_KEY")
 
-def extract_answer(data):
-    """Universal parser for ALL Perplexity response formats."""
 
-    # 1) Standard completion format → choices
+# --------------------------------------------------------
+# UNIVERSAL RESPONSE PARSER — never fails
+# --------------------------------------------------------
+def extract_answer(data):
+    """Parses all possible Perplexity API formats."""
+
+    # 1) Standard chat format
     if isinstance(data, dict):
         if "choices" in data:
             try:
@@ -15,82 +20,96 @@ def extract_answer(data):
             except:
                 pass
 
-        # 2) Some models return → output_text
+        # 2) output_text format
         if "output_text" in data:
             return data["output_text"]
 
-        # 3) Sometimes wrapped inside `data`
-        if "data" in data and isinstance(data["data"], dict):
-            inner = data["data"]
-            if "output_text" in inner:
-                return inner["output_text"]
-            if "text" in inner:
-                return inner["text"]
-
-        # 4) Some responses put text in plain "text"
+        # 3) text format
         if "text" in data:
             return data["text"]
 
-        # 5) API error message
+        # 4) nested data format
+        if "data" in data and isinstance(data["data"], dict):
+            nested = data["data"]
+            if "output_text" in nested:
+                return nested["output_text"]
+            if "text" in nested:
+                return nested["text"]
+
+        # 5) API error
         if "error" in data:
             return f"API Error: {data['error']}"
 
-    # 6) If everything fails → show raw data
+    # 6) fallback — show everything
     return f"Unexpected API response: {data}"
 
 
+# --------------------------------------------------------
+# MAIN PAGE FUNCTION
+# --------------------------------------------------------
 def show_ai_assistant():
     st.title("AI Insurance Assistant")
     st.write("Ask questions about health insurance, benefits, costs, and plan types.")
 
+    # Validate Key
     if not PPLX_KEY:
         st.error("Perplexity API key is missing. Add it in Streamlit Secrets.")
         return
 
-    # Chat history
+    # Chat history storage
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # Display old messages
+    # Display previous messages
     for msg in st.session_state.messages:
         role = "You" if msg["role"] == "user" else "Assistant"
         st.write(f"**{role}:** {msg['content']}")
 
-    # Input box
+    # User input
     user_input = st.text_input("Ask a question:")
 
+    # --------------------------------------------------------
+    # SEND MESSAGE
+    # --------------------------------------------------------
     if st.button("Send") and user_input:
+
+        # Store user message
         st.session_state.messages.append({"role": "user", "content": user_input})
 
-        # Build request
+        # Build API request
         url = "https://api.perplexity.ai/chat/completions"
         headers = {
             "Authorization": f"Bearer {PPLX_KEY}",
             "Content-Type": "application/json"
         }
+
+        # ⭐ Correct and working Perplexity model ⭐
         payload = {
-            "model": "llama-3.1-8b-instruct",
+            "model": "llama-3.1-sonar-small-128k-online",
             "messages": [
                 {"role": "system", "content": "You are a helpful insurance assistant."},
-                {"role": "user", "content": user_input}
+                {"role": "user", "content": user_input},
             ]
         }
 
-        # Send request
+        # API call
         try:
             response = requests.post(url, json=payload, headers=headers)
             data = response.json()
-
-            # Extract answer (handles all formats)
             answer = extract_answer(data)
 
         except Exception as e:
             answer = f"Error contacting Perplexity: {e}"
 
+        # Store assistant response
         st.session_state.messages.append({"role": "assistant", "content": answer})
-        st.success("Response received. Scroll up to read it.")
 
-    # Clear chat
+        # Update UI
+        st.success("Response received. Scroll up to view it.")
+
+    # --------------------------------------------------------
+    # CLEAR CHAT
+    # --------------------------------------------------------
     if st.button("Clear Conversation"):
         st.session_state.messages = []
         st.experimental_set_query_params()
