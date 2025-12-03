@@ -1,7 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="Hanvion Health – Insurance Intelligence", layout="wide")
-
+# Import pages
 from pages.overview import show_overview
 from pages.insurance_hub import show_insurance_hub
 from pages.plan_wizard import show_plan_wizard
@@ -9,42 +8,56 @@ from pages.cost_calculator import show_cost_calculator
 from pages.ai_assistant import show_ai_assistant
 from pages.nhe_dashboard import show_nhe_dashboard
 
-# Header
-st.markdown(
-    """
-    <div style='background: linear-gradient(90deg, #0D3B66, #00509E);
-                padding: 22px; border-radius: 0px 0px 16px 16px;
-                margin-bottom: 25px; color: white;'>
-        <h2 style='margin:0;'>Hanvion Health</h2>
-        <p style='margin-top:4px; opacity:0.9;'>Insurance • Costs • Insights</p>
-    </div>
-    """,
-    unsafe_allow_html=True,
+# ------------------------------------------------------------
+# Page Configuration
+# ------------------------------------------------------------
+st.set_page_config(
+    page_title="Hanvion Health – Insurance Intelligence",
+    layout="wide"
 )
 
-with st.sidebar:
-    st.markdown("### Navigate")
-    page = st.radio(
-        "",
-        [
-            "Overview",
-            "Insurance Hub",
-            "Insurance Wizard",
-            "Cost Calculator",
-            "AI Assistant",
-            "NHE Dashboard"
-        ],
-    )
+# ------------------------------------------------------------
+# Header (clean, Healthcare.gov style)
+# ------------------------------------------------------------
+st.markdown(
+    """
+    <div style='padding: 15px 0 5px 0;'>
+        <h1 style='color:#0D3B66; margin-bottom: 2px;'>Hanvion Health</h1>
+        <h4 style='color:#00509E; margin-top:0; font-weight:400;'>Insurance • Costs • Intelligence Platform</h4>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
-if page == "Overview":
+# ------------------------------------------------------------
+# Top Navigation Tabs
+# ------------------------------------------------------------
+tabs = st.tabs([
+    "Overview",
+    "Insurance Hub",
+    "Insurance Wizard",
+    "Cost Calculator",
+    "NHE Dashboard",
+    "AI Assistant",
+])
+
+# ------------------------------------------------------------
+# Content Routing
+# ------------------------------------------------------------
+with tabs[0]:
     show_overview()
-elif page == "Insurance Hub":
+
+with tabs[1]:
     show_insurance_hub()
-elif page == "Insurance Wizard":
+
+with tabs[2]:
     show_plan_wizard()
-elif page == "Cost Calculator":
+
+with tabs[3]:
     show_cost_calculator()
-elif page == "AI Assistant":
-    show_ai_assistant()
-elif page == "NHE Dashboard":
+
+with tabs[4]:
     show_nhe_dashboard()
+
+with tabs[5]:
+    show_ai_assistant()
