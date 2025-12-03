@@ -1,16 +1,21 @@
 import streamlit as st
 
 def show_overview():
-    # Header Section (Hero)
+    # Hero section
     st.markdown(
         """
         <div style="
-            padding: 18px 0 10px 0;
+            padding: 30px 0;
             border-bottom: 1px solid #E2E8F0;
         ">
-            <h2 style="color:#0D3B66; margin-bottom:4px;">Welcome to Hanvion Health</h2>
-            <p style="color:#444; font-size:1.05rem; margin-top:0;">
-                A clear and simple way to understand U.S. health insurance — eligibility, plans, costs, and national trends.
+            <h1 style="color:#0D3B66; margin-bottom:6px;">Hanvion Health</h1>
+            <h4 style="color:#00509E; margin-top:0; font-weight:400;">
+                Insurance • Costs • Intelligence Platform
+            </h4>
+            <p style="color:#444; font-size:1.05rem; width:75%; line-height:1.6;">
+                A clean and simple way to understand U.S. health insurance — compare 
+                plans, estimate costs, explore national healthcare spending, and get 
+                instant answers from AI. Built for patients, providers, and learners.
             </p>
         </div>
         """,
@@ -21,64 +26,55 @@ def show_overview():
 
     col1, col2, col3 = st.columns(3)
 
-    # Card 1 — Wizard
     with col1:
         st.markdown(
             """
             <div style="
-                border: 1px solid #E0E0E0;
-                padding: 18px;
-                border-radius: 12px;
-                background: white;
-                box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
-                height: 190px;
+                border:1px solid #E0E0E0;
+                padding:18px;
+                border-radius:12px;
+                background:white;
+                box-shadow:0px 2px 4px rgba(0,0,0,0.05);
+                height:190px;
             ">
-                <h4 style="color:#0D3B66; margin-bottom:8px;">Insurance Wizard</h4>
-                <p style="color:#444; line-height:1.45;">
-                    A step-by-step guide to help you determine which insurance category fits your situation.
-                </p>
+                <h4 style="color:#0D3B66;">Insurance Wizard</h4>
+                <p style="color:#444;">Find which type of plan fits your situation based on age, income, job status, and state.</p>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-    # Card 2 — Cost Calculator
     with col2:
         st.markdown(
             """
             <div style="
-                border: 1px solid #E0E0E0;
-                padding: 18px;
-                border-radius: 12px;
-                background: white;
-                box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
-                height: 190px;
+                border:1px solid #E0E0E0;
+                padding:18px;
+                border-radius:12px;
+                background:white;
+                box-shadow:0px 2px 4px rgba(0,0,0,0.05);
+                height:190px;
             ">
-                <h4 style="color:#0D3B66; margin-bottom:8px;">Cost Calculator</h4>
-                <p style="color:#444; line-height:1.45;">
-                    Estimate premiums, deductibles, and expected yearly healthcare costs based on real plan rules.
-                </p>
+                <h4 style="color:#0D3B66;">Cost Calculator</h4>
+                <p style="color:#444;">Estimate premiums, deductibles, and your expected annual spending.</p>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-    # Card 3 — AI Assistant
     with col3:
         st.markdown(
             """
             <div style="
-                border: 1px solid #E0E0E0;
-                padding: 18px;
-                border-radius: 12px;
-                background: white;
-                box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
-                height: 190px;
+                border:1px solid #E0E0E0;
+                padding:18px;
+                border-radius:12px;
+                background:white;
+                box-shadow:0px 2px 4px rgba(0,0,0,0.05);
+                height:190px;
             ">
-                <h4 style="color:#0D3B66; margin-bottom:8px;">AI Insurance Assistant</h4>
-                <p style="color:#444; line-height:1.45;">
-                    Ask any insurance-related question in clear language — coverage, eligibility, costs, and more.
-                </p>
+                <h4 style="color:#0D3B66;">AI Assistant</h4>
+                <p style="color:#444;">Ask any health insurance question and get instant, clear answers.</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -86,23 +82,20 @@ def show_overview():
 
     st.markdown("### Explore More")
 
-    col4, col5 = st.columns([1, 1])
+    col4, col5 = st.columns(2)
 
     with col4:
         st.markdown(
             """
             <div style="
-                border: 1px solid #E0E0E0;
-                padding: 18px;
-                border-radius: 12px;
-                background: white;
-                box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
+                border:1px solid #E0E0E0;
+                padding:18px;
+                border-radius:12px;
+                background:white;
+                box-shadow:0px 2px 4px rgba(0,0,0,0.05);
             ">
                 <h4 style="color:#0D3B66;">Insurance Hub</h4>
-                <p style="color:#444; line-height:1.45;">
-                    Understand key insurance terms: deductible, copay, coinsurance, out-of-pocket max, subsidies,
-                    allowed amount, and coverage rules.
-                </p>
+                <p style="color:#444;">Learn insurance fundamentals — deductible, copay, coinsurance, networks, and more.</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -112,17 +105,14 @@ def show_overview():
         st.markdown(
             """
             <div style="
-                border: 1px solid #E0E0E0;
-                padding: 18px;
-                border-radius: 12px;
-                background: white;
-                box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
+                border:1px solid #E0E0E0;
+                padding:18px;
+                border-radius:12px;
+                background:white;
+                box-shadow:0px 2px 4px rgba(0,0,0,0.05);
             ">
                 <h4 style="color:#0D3B66;">NHE Dashboard</h4>
-                <p style="color:#444; line-height:1.45;">
-                    View national healthcare expenditure trends — hospital, physician, prescription, Medicare,
-                    Medicaid, private health insurance, and out-of-pocket spending.
-                </p>
+                <p style="color:#444;">Explore U.S. healthcare spending trends from official NHE datasets.</p>
             </div>
             """,
             unsafe_allow_html=True,
